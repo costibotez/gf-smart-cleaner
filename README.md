@@ -1,86 +1,62 @@
 # Gravity Forms Smart Spam Cleaner
 
-A WordPress plugin that automatically detects and deletes spam entries in [Gravity Forms](https://www.gravityforms.com/) based on gibberish input, disposable emails, Cyrillic Telegram spam, and more. The plugin learns over time by building a smart blocked email list.
+**Author:** Costin Botez  
+**Version:** 1.8.0  
+**Requires:** WordPress + Gravity Forms
+
+## 🚀 What It Does
+
+This plugin detects and removes spam entries from Gravity Forms based on:
+
+- Gibberish input detection (e.g. `AjqERvytZ`)
+- Cyrillic & Telegram message spam
+- Dot-trick email abuse (`j.85.2.4.7@gmail.com`)
+- Disposable email domains
+- Repeated patterns learned over time
+
+### Bonus Features:
+✅ Live progress bar  
+✅ Activity log viewer  
+✅ Admin form selector  
+✅ Editable blocked email list  
+✅ Preview mode (review before deleting)
 
 ---
 
-## 🚀 Features
+## ⚙️ How to Use
 
-- Detects spam based on:
-  - Gibberish text (e.g. no vowels, long consonant chains)
-  - Suspicious patterns (e.g. random casing, Cyrillic with “Telegram”)
-  - Disposable or temporary email domains
-  - Custom blocked email list
-- Automatically builds and updates a blocked list
-- Manual textarea to add/remove blocked emails
-- Live cleanup with AJAX + progress tracking
-- Auto-runs cleanup in batches (no more button mashing)
-- Works with any form, dynamically loads field structure
+1. Upload and activate the plugin.
+2. Go to **Gravity Forms → Spam Cleaner**
+3. Select the form you want to clean.
+4. Click **Run Preview** to see spam candidates.
+5. Click **Run Full Cleanup** to remove them.
+
+Blocked emails are saved and reused for future checks.
 
 ---
 
-## 🧠 How it Works
+## 🧠 Learning Mode
 
-1. Go to `Forms → Smart Spam Cleaner`
-2. Select a form to scan
-3. Click **Run Full Cleanup**
-4. It will:
-   - Loop through entries in batches
-   - Detect spammy patterns
-   - Delete matching entries
-   - Update your blocklist automatically
+Every time spam is deleted, the plugin adds the associated email address to a local blocklist stored in `wp_options`.
 
-You can also **manually edit the blocked email list**.
+You can manage this blocklist in the admin interface.
 
 ---
 
-## 📦 Installation
+## 💬 Want to Contribute?
 
-1. Clone this repo into `/wp-content/plugins/`:
-
-```bash
-git clone https://github.com/your-username/gravityforms-smart-spam-cleaner.git
-```
-
-2. Activate the plugin in your WordPress dashboard.
-3. Navigate to **Forms → Smart Spam Cleaner** to configure and run it.
+This plugin was built for internal use at [Inception Group](https://inception-group.com) — but contributions and ideas are welcome! Fork it, test it, improve it.
 
 ---
 
-## ✅ Requirements
+## 📁 Files
 
-- WordPress 5.0+
-- Gravity Forms 2.5+
-- Admin access to your site
-
----
-
-## 📂 Folder Structure
-
-```
-gravityforms-smart-spam-cleaner/
-├── gravityforms-smart-spam-cleaner.php
-├── README.md
-└── (optional) LICENSE
-```
+- `gravityforms-smart-spam-cleaner.php` – core logic
+- `admin-ui.php` – settings page & logs
+- `assets/` – styles and icons
 
 ---
 
-## 📥 Roadmap Ideas
+## 📝 License
 
-- Schedule cleanup via WP-Cron
-- CSV export of blocked or deleted entries
-- Undo last cleanup (soft-delete mode)
-- Add IP/domain blocking logic
-
----
-
-## 🙌 Contributing
-
-Feel free to fork, clone, and submit PRs. Let’s clean up Gravity Forms together!
-
----
-
-## 🧑‍💻 Author
-
-Made with 💡 by [Costin Botez](https://nomad-developer.co.uk)
+MIT – use freely and responsibly.
