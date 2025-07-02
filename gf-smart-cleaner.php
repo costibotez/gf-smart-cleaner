@@ -2,7 +2,7 @@
 /*
 Plugin Name: Gravity Forms Smart Spam Cleaner
 Description: Automatically detects and deletes spam entries from Gravity Forms based on gibberish content and blocked emails. Learns over time by saving blocked emails to a list.
-Version: 1.7
+Version: 1.7.1
 Author: Costin Botez
 */
 
@@ -22,21 +22,28 @@ function gf_smart_spam_cleaner_run($form_id, $preview = false, $batch_limit = 10
         $delete = false;
         $email = rgar($entry, '2');
 
+        $email_is_spam = false;
         foreach ($blocked_domains as $domain) {
-            if (strpos($email, $domain) !== false) $delete = true;
+            if (strpos($email, $domain) !== false) $email_is_spam = true;
         }
+        if (preg_match('/\d{2,}\./', $email)) $email_is_spam = true;
+        if (in_array(strtolower($email), $blocked_emails)) $email_is_spam = true;
+
+        if ($email_is_spam) $delete = true;
 
         foreach ($form['fields'] as $field) {
             $field_id = $field->id;
             $value = rgar($entry, (string)$field_id);
-            if (strlen($value) < 3 || strlen($value) > 100) $delete = true;
-            if (!preg_match('/[aeiou]/iu', $value) || preg_match('/[bcdfghjklmnpqrstvwxyz]{5,}/iu', $value)) $delete = true;
+
+            // Skip empty or short labels to avoid deleting short but valid content
+            if (!$value || strlen(trim($value)) < 3) continue;
+
+            // Strong spam heuristics only
+            if (!preg_match('/[aeiou]/iu', $value)) $delete = true;
+            if (preg_match('/[bcdfghjklmnpqrstvwxyz]{5,}/iu', $value)) $delete = true;
             if (preg_match('/([a-z]+[A-Z]+[a-z]+)/', $value)) $delete = true;
             if (preg_match('/[\p{Cyrillic}]/u', $value) && preg_match('/телеграм|telegram/i', $value)) $delete = true;
-            if (preg_match('/\d{2,}\./', $email)) $delete = true;
         }
-
-        if (in_array(strtolower($email), $blocked_emails)) $delete = true;
 
         if ($delete) {
             $newly_blocked_emails[] = strtolower($email);
