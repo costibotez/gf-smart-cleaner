@@ -3,12 +3,14 @@
 
 	var cfg = window.gfscData || {};
 	var i18n = cfg.i18n || {};
-	var MAX_PASSES = 50;
+	var forms = cfg.forms || [];
+	var MAX_PASSES_PER_FORM = 50;
 
 	var runButton = document.getElementById('gfsc-run');
 	var previewButton = document.getElementById('gfsc-preview');
 	var progress = document.getElementById('gfsc-progress');
 	var results = document.getElementById('gfsc-preview-results');
+	var logTable = document.getElementById('gfsc-log');
 
 	function sprintf(template) {
 		var args = Array.prototype.slice.call(arguments, 1);
@@ -36,7 +38,6 @@
 		var body = new URLSearchParams();
 		body.set('action', action);
 		body.set('nonce', cfg.nonce);
-		body.set('form_id', cfg.formId);
 		Object.keys(params || {}).forEach(function (key) {
 			body.set(key, params[key]);
 		});
@@ -63,19 +64,26 @@
 		addMessage(progress, 'p', i18n.cleaning || 'Cleaning…');
 
 		var totalDeleted = 0;
-		var offset = 0;
 
 		try {
-			for (var pass = 1; pass <= MAX_PASSES; pass++) {
-				var data = await post('gfsc_run', { offset: offset });
-				totalDeleted += data.deleted;
-				offset = data.next_offset;
-				addMessage(progress, 'p', sprintf(i18n.passResult || 'Pass #%s: deleted %s, blocked %s.', pass, data.deleted, data.blocked));
-				if (data.scanned === 0 || offset >= data.total) {
-					break;
+			for (var f = 0; f < forms.length; f++) {
+				var form = forms[f];
+				var offset = 0;
+
+				for (var pass = 1; pass <= MAX_PASSES_PER_FORM; pass++) {
+					var data = await post('gfsc_run', { form_id: form.id, offset: offset });
+					totalDeleted += data.deleted;
+					offset = data.next_offset;
+					addMessage(progress, 'p', sprintf(
+						i18n.passResult || '%s — pass #%s: removed %s, blocked %s.',
+						form.title, pass, data.deleted, data.blocked
+					));
+					if (data.scanned === 0 || offset >= data.total) {
+						break;
+					}
 				}
 			}
-			addMessage(progress, 'h4', '✅ ' + sprintf(i18n.cleanupDone || 'Cleanup complete. Total deleted: %s', totalDeleted));
+			addMessage(progress, 'h4', '✅ ' + sprintf(i18n.cleanupDone || 'Cleanup complete. Total removed: %s', totalDeleted));
 		} catch (err) {
 			addMessage(progress, 'p', (i18n.error || 'Error:') + ' ' + err.message);
 		} finally {
@@ -83,14 +91,20 @@
 		}
 	}
 
-	function renderPreviewTable(candidates) {
+	function renderPreviewTable(rows) {
 		var table = document.createElement('table');
 		table.className = 'widefat striped';
 		table.style.maxWidth = '900px';
 
 		var thead = document.createElement('thead');
 		var headRow = document.createElement('tr');
-		[i18n.colEntry || 'Entry ID', i18n.colEmail || 'Email', i18n.colDate || 'Date', i18n.colReason || 'Reason'].forEach(function (label) {
+		[
+			i18n.colForm || 'Form',
+			i18n.colEntry || 'Entry ID',
+			i18n.colEmail || 'Email',
+			i18n.colDate || 'Date',
+			i18n.colReason || 'Reason'
+		].forEach(function (label) {
 			var th = document.createElement('th');
 			th.textContent = label;
 			headRow.appendChild(th);
@@ -99,14 +113,14 @@
 		table.appendChild(thead);
 
 		var tbody = document.createElement('tbody');
-		candidates.forEach(function (candidate) {
-			var row = document.createElement('tr');
-			[candidate.id, candidate.email, candidate.date_created, candidate.reason].forEach(function (value) {
+		rows.forEach(function (row) {
+			var tr = document.createElement('tr');
+			[row.formTitle, row.id, row.email, row.date_created, row.reason].forEach(function (value) {
 				var td = document.createElement('td');
 				td.textContent = value == null ? '' : String(value);
-				row.appendChild(td);
+				tr.appendChild(td);
 			});
-			tbody.appendChild(row);
+			tbody.appendChild(tr);
 		});
 		table.appendChild(tbody);
 
@@ -120,13 +134,25 @@
 		addMessage(progress, 'p', i18n.previewing || 'Scanning…');
 
 		try {
-			var data = await post('gfsc_preview', {});
+			var allRows = [];
+			var totalScanned = 0;
+
+			for (var f = 0; f < forms.length; f++) {
+				var form = forms[f];
+				var data = await post('gfsc_preview', { form_id: form.id });
+				totalScanned += data.scanned;
+				data.candidates.forEach(function (candidate) {
+					candidate.formTitle = form.title;
+					allRows.push(candidate);
+				});
+			}
+
 			progress.textContent = '';
-			addMessage(progress, 'p', sprintf(i18n.previewDone || 'Found %s candidates out of %s entries.', data.candidates.length, data.scanned));
-			if (data.candidates.length === 0) {
+			addMessage(progress, 'p', sprintf(i18n.previewDone || 'Found %s candidates out of %s entries.', allRows.length, totalScanned));
+			if (allRows.length === 0) {
 				addMessage(results, 'p', i18n.noCandidates || 'No spam candidates found.');
 			} else {
-				renderPreviewTable(data.candidates);
+				renderPreviewTable(allRows);
 			}
 		} catch (err) {
 			addMessage(progress, 'p', (i18n.error || 'Error:') + ' ' + err.message);
@@ -135,6 +161,29 @@
 		}
 	}
 
+	async function restoreEntry(button) {
+		button.disabled = true;
+		button.textContent = i18n.restoring || 'Restoring…';
+
+		try {
+			await post('gfsc_restore', { entry_id: button.dataset.entryId });
+			var em = document.createElement('em');
+			em.textContent = '(' + (i18n.restored || 'Restored') + ')';
+			button.replaceWith(em);
+		} catch (err) {
+			button.disabled = false;
+			button.textContent = (i18n.error || 'Error:') + ' ' + err.message;
+		}
+	}
+
 	if (runButton) runButton.addEventListener('click', runCleanup);
 	if (previewButton) previewButton.addEventListener('click', runPreview);
+	if (logTable) {
+		logTable.addEventListener('click', function (event) {
+			var button = event.target.closest('.gfsc-restore');
+			if (button) {
+				restoreEntry(button);
+			}
+		});
+	}
 })();
