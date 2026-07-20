@@ -1,8 +1,13 @@
 <div align="center">
 
+<img src="assets/banner.svg" alt="Gravity Forms Smart Spam Cleaner" width="100%">
+
 # 🧹 Gravity Forms Smart Spam Cleaner
 
 **Set-and-forget spam removal for Gravity Forms — with a safety net.**
+
+Detects gibberish, disposable emails, and Telegram spam in your form entries —
+then trashes them **recoverably**, on a schedule, or blocks them before they're ever saved.
 
 ![Version](https://img.shields.io/badge/version-2.1.0-blue)
 ![WordPress](https://img.shields.io/badge/WordPress-5.9%2B-21759b?logo=wordpress&logoColor=white)
@@ -10,8 +15,15 @@
 ![PHP](https://img.shields.io/badge/PHP-7.4%2B-777bb4?logo=php&logoColor=white)
 ![License](https://img.shields.io/badge/license-MIT-green)
 
-Detects gibberish, disposable emails, and Telegram spam in your form entries —
-then trashes them **recoverably**, on a schedule, or blocks them before they're even saved.
+[Why this plugin?](#-why-this-plugin) ·
+[Features](#-features) ·
+[How detection works](#-how-detection-works) ·
+[Quick start](#-quick-start) ·
+[Screenshots](#-screenshots) ·
+[Security](#-security) ·
+[Changelog](#-changelog)
+
+<sub>Built by <a href="https://nomad-developer.co.uk">Nomad Developer</a> · <a href="https://nomad-developer.co.uk">nomad-developer.co.uk</a></sub>
 
 </div>
 
@@ -76,7 +88,7 @@ entry restored ──► email leaves the blocklist ──►  joins the whiteli
 
 ---
 
-## ⚙️ Getting started
+## ⚡ Quick start
 
 1. **Install & activate** (Gravity Forms must be active — you'll get a notice, not a fatal, if it isn't).
 2. Go to **Forms → Smart Spam Cleaner**.
@@ -93,6 +105,20 @@ entry restored ──► email leaves the blocklist ──►  joins the whiteli
 | Block at submission | on / off | off |
 | Automated cleanup | off / hourly / twice daily / daily / weekly | off |
 | Email summary | on / off + recipient | off → admin email |
+
+---
+
+## 📸 Screenshots
+
+| Settings & automation | Preview (dry run) |
+|:---:|:---:|
+| ![Settings](assets/screenshots/settings.png) | ![Preview](assets/screenshots/preview.png) |
+| **Forms, removal mode, schedule and email summary — all in one panel.** | **See every candidate and the exact rule that flagged it — nothing is touched.** |
+
+| Editable lists | Activity log & restore |
+|:---:|:---:|
+| ![Lists](assets/screenshots/lists.png) | ![Activity log](assets/screenshots/activity-log.png) |
+| **Blocked emails, blocked domains and the always-wins whitelist.** | **Every run recorded, with one-click Restore for trashed entries.** |
 
 ---
 
@@ -137,6 +163,8 @@ gf-smart-cleaner/
     └── class-gfsc-logger.php          ← activity log (capped ring buffer)
 ```
 
+**Requirements:** WordPress 5.9+ · PHP 7.4+ · Gravity Forms (active).
+
 ---
 
 ## 📜 Changelog
@@ -162,8 +190,18 @@ gf-smart-cleaner/
 
 ## 💬 Contributing
 
-Built for internal use at [Inception Group](https://inception-group.com) — but ideas, issues, and PRs are welcome. Fork it, test it, improve it.
+Ideas, issues, and PRs are welcome. Fork it, test it, improve it.
 
 ## 📝 License
 
 [MIT](https://opensource.org/licenses/MIT) — use freely and responsibly.
+
+<div align="center">
+<br>
+<img src="assets/logo.svg" alt="Nomad Developer" width="72">
+
+**Built and maintained by [Nomad Developer](https://nomad-developer.co.uk)**
+
+WordPress plugins &amp; custom builds · [nomad-developer.co.uk](https://nomad-developer.co.uk)
+
+</div>
