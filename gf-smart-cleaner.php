@@ -1,9 +1,11 @@
 <?php
 /*
 Plugin Name: Gravity Forms Smart Spam Cleaner
+Plugin URI: https://nomad-developer.co.uk
 Description: Automatically detects and removes spam entries from Gravity Forms based on gibberish content and blocked emails. Supports scheduled cleanups, recoverable deletions, submission-time blocking, and learns over time by saving blocked emails to a list.
 Version: 2.1.0
-Author: Costin Botez
+Author: Nomad Developer
+Author URI: https://nomad-developer.co.uk
 Text Domain: gf-smart-cleaner
 License: MIT
 */

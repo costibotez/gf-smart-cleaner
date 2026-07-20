@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="120" height="120" viewBox="0 0 120 120" role="img" aria-label="Smart Spam Cleaner logo">
+  <defs>
+    <linearGradient id="ring" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#38bdf8"/>
+      <stop offset="1" stop-color="#22d3ee"/>
+    </linearGradient>
+  </defs>
+  <rect width="120" height="120" rx="26" fill="#0f172a"/>
+  <circle cx="60" cy="60" r="42" fill="none" stroke="url(#ring)" stroke-width="5" opacity="0.9"/>
+  <g transform="translate(60,60) rotate(35)">
+    <rect x="-4" y="-34" width="8" height="42" rx="4" fill="#94a3b8"/>
+    <rect x="-16" y="6" width="32" height="14" rx="5" fill="#38bdf8"/>
+    <path d="M-20 20 L20 20 L30 48 L-30 48 Z" fill="#22d3ee"/>
+    <g stroke="#0f172a" stroke-width="2.5" opacity="0.55">
+      <line x1="-16" y1="24" x2="-24" y2="46"/>
+      <line x1="-6" y1="24" x2="-8" y2="46"/>
+      <line x1="4" y1="24" x2="6" y2="46"/>
+      <line x1="14" y1="24" x2="24" y2="46"/>
+    </g>
+  </g>
+</svg>
